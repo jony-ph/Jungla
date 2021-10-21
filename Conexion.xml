@@ -1,0 +1,1 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><Conexion><Elemento><Nombre>Servidor</Nombre><Valor>localhost</Valor></Elemento><Elemento><Nombre>Usuario</Nombre><Valor>root</Valor></Elemento><Elemento><Nombre>Contraseña</Nombre><Valor/></Elemento><Elemento><Nombre>Puerto</Nombre><Valor>3306</Valor></Elemento></Conexion>
