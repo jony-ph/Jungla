@@ -1,7 +1,10 @@
 
 import Styles.TextPrompt;
+import java.math.BigInteger;
 import java.sql.*;
 import javax.swing.JOptionPane;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 public class NewUser extends javax.swing.JFrame {
     
@@ -138,6 +141,36 @@ public class NewUser extends javax.swing.JFrame {
         txtCEmployee.setText("");
         
     }
+
+    // Función para validar caracteristicas de la contraseña
+    public boolean validationPass(String pw){
+        
+        String pattern = "(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=]).{8,}";
+        return pw.matches(pattern);
+        
+    }
+    
+    // Función para encriptar
+    public String encrypt(String pw){
+        
+        try {
+            
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            byte[] messageDigest = md.digest(pw.getBytes());
+            BigInteger number = new BigInteger(1, messageDigest);
+            String hashtext = number.toString(16);
+            
+            while (hashtext.length() < 32) {
+                hashtext = "0" + hashtext;
+            }
+            
+            return hashtext;
+ 
+        } catch (NoSuchAlgorithmException ex) {
+            throw new RuntimeException(ex);
+        }
+        
+    }
     
     private void btnCreateUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCreateUserActionPerformed
         
@@ -149,22 +182,35 @@ public class NewUser extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "¡Debes llenar todos los campos!");
             txtCUser.requestFocus();
         } else {
-             
-             try{
+                        
+            try{
                  
                 String query = " INSERT INTO usuarios (nombre_usuario, contrasena, id_empleado) VALUES (?,?,?) ";
                 PreparedStatement insert = cn.prepareStatement(query);
                 
-                insert.setString(1, user);
-                insert.setString(2, pass);
-                insert.setInt(3, Integer.parseInt(emp));
-                insert.executeUpdate();
+                if (validationPass(pass)){
+                    
+                    insert.setString(1, user);
+                    String pw = encrypt(pass);
+                    insert.setString(2, pw);
+                    insert.setInt(3, Integer.parseInt(emp));
+                    insert.executeUpdate();
+                    
+                    JOptionPane.showMessageDialog(null, "¡Usuario creado con éxito!");
                 
-                JOptionPane.showMessageDialog(null, "¡Usuario creado con éxito!");
-                
-                Main winMain = new Main();
-                winMain.setVisible(true);
-                this.dispose();
+                    Main winMain = new Main();
+                    winMain.setVisible(true);
+                    this.dispose();
+                    
+                } else {          
+                    JOptionPane.showMessageDialog(null, "La contraseña debe contener: \n\n" +
+                                                        "* Al menos 8 caracteres.\n" +
+                                                        "* Al menos una letra mayúscula.\n" +
+                                                        "* Al menos una letra minúscula.\n" +
+                                                        "* Al menos un número. \n" +
+                                                        "* Al menos un caracter especial.");
+                    txtCPassword.setText("");
+                } 
                  
              } catch (SQLException ex){
                 JOptionPane.showMessageDialog(null, "Hubo un error inesperado: " + ex);
@@ -174,7 +220,7 @@ public class NewUser extends javax.swing.JFrame {
                 clean();
              }
              
-         }
+        }
         
     }//GEN-LAST:event_btnCreateUserActionPerformed
 

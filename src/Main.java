@@ -126,6 +126,7 @@ public class Main extends javax.swing.JFrame {
     }
     
     private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoginActionPerformed
+        
         String user = txtLUser.getText();
         String pass = txtLPassword.getText();
         
@@ -135,6 +136,10 @@ public class Main extends javax.swing.JFrame {
         } else {
             
             try {
+                
+                NewUser nuWin = new NewUser();
+                pass = nuWin.encrypt(pass);
+                
                 String query = " SELECT * FROM usuarios WHERE nombre_usuario='"+ user + "' AND contrasena='"+ pass + "'";
                 Statement stmt = connection().createStatement();
                 ResultSet rs = stmt.executeQuery(query);         
@@ -142,7 +147,7 @@ public class Main extends javax.swing.JFrame {
                 if(!rs.next()){
                     
                     JOptionPane.showMessageDialog(null, "¡Usuario o contraseña incorrecto!");
-                    clean();
+                    txtLPassword.setText("");
                     
                 } else {     
                     Menu winMenu = new Menu();
@@ -155,6 +160,7 @@ public class Main extends javax.swing.JFrame {
             }
             
         }
+        
     }//GEN-LAST:event_btnLoginActionPerformed
 
     private void lblCreateUserMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_lblCreateUserMouseClicked
